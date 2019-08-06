@@ -41,7 +41,7 @@ public class StepImplementation {
             } else if (browserName.equalsIgnoreCase("grid")) {
                 ChromeOptions options = new ChromeOptions();
                 dcap.setCapability(ChromeOptions.CAPABILITY, options);
-                URL url = new URL("http://zalenium-f7350eafb482f934.elb.eu-west-1.amazonaws.com/wd/hub");
+                URL url = new URL("http://zalenium/wd/hub");
               //  URL url = new URL("http://172.17.0.2:4445/wd/hub");
 
                 driver = new RemoteWebDriver(url, dcap);
