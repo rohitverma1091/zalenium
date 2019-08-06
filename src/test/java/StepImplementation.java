@@ -41,7 +41,7 @@ public class StepImplementation {
             } else if (browserName.equalsIgnoreCase("grid")) {
                 ChromeOptions options = new ChromeOptions();
                 dcap.setCapability(ChromeOptions.CAPABILITY, options);
-                URL url = new URL("http://a888f4433b76111e98e58020f30713b0-2038764419.eu-west-1.elb.amazonaws.com/wd/hub");
+                URL url = new URL("http://a85d06e25b81411e9bfcc0a2d60f7794-1973554215.eu-west-1.elb.amazonaws.com/wd/hub");
               //  URL url = new URL("http://172.17.0.2:4445/wd/hub");
 
                 driver = new RemoteWebDriver(url, dcap);
