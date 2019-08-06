@@ -1,0 +1,12 @@
+version: '3'
+services:
+ zalenium:
+  image: dosel/zalenium
+  container_name: zalenium
+  hostname: zalenium
+  tty: true
+  ports:
+  - "4444:4444"
+  restart: unless-stopped
+  command: ["start", "--desiredContainers", "5", "--maxDockerSeleniumContainers", "10","--sauceEnabled","false","--screenWidth", "1920", "-screenHeight", "1080"]
+  privileged: true
