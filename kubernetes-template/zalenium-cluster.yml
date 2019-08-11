@@ -1,0 +1,238 @@
+---
+# Source: zalenium/templates/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zalenium
+  labels:
+    role: grid
+    app: zalenium
+    chart: zalenium-3.141.59
+    release: zalenium
+    heritage: Tiller
+    app.kubernetes.io/name: zalenium
+    helm.sh/chart: zalenium-3.141.59
+    app.kubernetes.io/instance: zalenium
+    app.kubernetes.io/managed-by: Tiller
+---
+# Source: zalenium/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zalenium
+  labels:
+    role: grid
+    app: zalenium
+    chart: zalenium-3.141.59
+    release: zalenium
+    heritage: Tiller
+    app.kubernetes.io/name: zalenium
+    helm.sh/chart: zalenium-3.141.59
+    app.kubernetes.io/instance: zalenium
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  type: "LoadBalancer"
+  sessionAffinity: "None"
+  ports:
+  - name: hub
+    port: 80
+    targetPort: 4444
+  selector:
+    app.kubernetes.io/name: zalenium
+    app.kubernetes.io/instance: zalenium
+
+---
+# Source: zalenium/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zalenium
+  labels:
+    role: grid
+    app: zalenium
+    chart: zalenium-3.141.59
+    release: zalenium
+    heritage: Tiller
+    app.kubernetes.io/name: zalenium
+    helm.sh/chart: zalenium-3.141.59
+    app.kubernetes.io/instance: zalenium
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zalenium
+      app.kubernetes.io/instance: zalenium
+  template:
+    metadata:
+      labels:
+        role: grid
+        app: zalenium
+        chart: zalenium-3.141.59
+        release: zalenium
+        heritage: Tiller
+        app.kubernetes.io/name: zalenium
+        helm.sh/chart: zalenium-3.141.59
+        app.kubernetes.io/instance: zalenium
+        app.kubernetes.io/managed-by: Tiller
+      annotations:
+        {}
+        
+    spec:
+      securityContext:
+        null
+        
+      volumes:
+        - name: zalenium-videos
+          emptyDir: {}
+        - name: zalenium-data
+          emptyDir: {}
+      nodeSelector:
+          app: zalenium
+          beta.kubernetes.io/instance-type: c4.4xlarge
+      containers:
+        - name: zalenium
+          image: "dosel/zalenium:3"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            null
+          ports:
+            - containerPort: 4444
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /grid/console
+              port: 4444
+            initialDelaySeconds: 90
+            periodSeconds: 5
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /grid/console
+              port: 4444
+            timeoutSeconds: 1
+          env:
+            - name: ZALENIUM_KUBERNETES_CPU_REQUEST
+              value: "250m"
+            - name: ZALENIUM_KUBERNETES_CPU_LIMIT
+              value: "1000m"
+            - name: ZALENIUM_KUBERNETES_MEMORY_REQUEST
+              value: "500Mi"
+            - name: ZALENIUM_KUBERNETES_MEMORY_LIMIT
+              value: "2Gi"
+            - name: DESIRED_CONTAINERS
+              value: "20"
+            - name: MAX_DOCKER_SELENIUM_CONTAINERS
+              value: "35"
+            - name: SELENIUM_IMAGE_NAME
+              value: "elgalu/selenium"
+            - name: VIDEO_RECORDING_ENABLED
+              value: "true"
+            - name: SCREEN_WIDTH
+              value: "1440"
+            - name: SCREEN_HEIGHT
+              value: "900"
+            - name: MAX_TEST_SESSIONS
+              value: "1"
+            - name: NEW_SESSION_WAIT_TIMEOUT
+              value: "600000"
+            - name: DEBUG_ENABLED
+              value: "false"
+            - name: SEND_ANONYMOUS_USAGE_INFO
+              value: "false"
+            - name: TZ
+              value: "UTC"
+            - name: KEEP_ONLY_FAILED_TESTS
+              value: "false"
+            - name: RETENTION_PERIOD
+              value: "3"
+          args:
+            - start
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+            
+          volumeMounts:
+            - name: zalenium-videos
+              mountPath: /home/seluser/videos
+            - name: zalenium-data
+              mountPath: /tmp/mounted
+      serviceAccountName: zalenium
+---
+# Source: zalenium/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "Role"
+metadata:
+  name: zalenium
+  labels:
+    role: grid
+    app: zalenium
+    chart: zalenium-3.141.59
+    release: zalenium
+    heritage: Tiller
+    app.kubernetes.io/name: zalenium
+    helm.sh/chart: zalenium-3.141.59
+    app.kubernetes.io/instance: zalenium
+    app.kubernetes.io/managed-by: Tiller
+rules:
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - deletecollection
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  attributeRestrictions: null
+  resources:
+  - pods/exec
+  verbs:
+  - create
+  - get
+---
+# Source: zalenium/templates/role-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "RoleBinding"
+metadata:
+  name: zalenium
+  labels:
+    role: grid
+    app: zalenium
+    chart: zalenium-3.141.59
+    release: zalenium
+    heritage: Tiller
+    app.kubernetes.io/name: zalenium
+    helm.sh/chart: zalenium-3.141.59
+    app.kubernetes.io/instance: zalenium
+    app.kubernetes.io/managed-by: Tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "Role"
+  name: zalenium
+subjects:
+- kind: ServiceAccount
+  name: zalenium
+---
+# Source: zalenium/templates/deployment-config.yaml
+
+---
+# Source: zalenium/templates/ingress.yaml
+
+---
+# Source: zalenium/templates/pvc-data.yaml
+
+---
+# Source: zalenium/templates/pvc-video.yaml
+
+---
+# Source: zalenium/templates/route.yaml
+
+---
+# Source: zalenium/templates/secret.yaml

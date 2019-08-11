@@ -17,6 +17,6 @@ spec:
           image: maven:latest
           env:
             - name: testcase
-              value: "kubetestcase"
+              value: "20"
           command: ["/bin/sh"]
           args: ["-c", "apt-get install git; wget https://github.com/getgauge/gauge/releases/download/v1.0.5/gauge-1.0.5-linux.x86_64.zip; unzip -o gauge-1.0.5-linux.x86_64.zip -d /usr/sbin/; git config http.sslVerify false; git clone https://github.com/rohitverma1091/zalenium.git; ls -lrth; cd zalenium/; i=1; while [ $testcase -gt $i ]; do cp specs/OpenAccount.spec specs/OpenAccount$i.spec; i=$(( i+1 )); done; mvn test-compile gauge:execute -DspecsDir=specs -DinParallel=true -Dnodes=20"]
